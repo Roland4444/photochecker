@@ -1,6 +1,6 @@
 #include <iostream>
 #include <dlfcn.h>
-
+#include <fstream>
 using namespace std;
 
 typedef struct{
@@ -16,7 +16,7 @@ typedef struct{
 	int last_error;
 } Session;
 
-typedef int (*v_create_session)(Session*, char *);
+typedef int (*i_create_session)(Session*, char *);
 typedef int (*BKKCheck)(Session *,  uint8_t * , uint64_t);
 
 
@@ -39,11 +39,11 @@ class Checker_Photo
 			if (loadContent(filename) == NULL)
                 return -1;
             ci = loadContent(filename);
-            BKKCheck v_check = (BKKCheck)(dlsym(handle,"i_check"));
-            if (!v_check)
+            BKKCheck i_check = (BKKCheck)(dlsym(handle,"i_check"));
+            if (!i_check)
                 return -2;
 
-            if (!v_check(this->session, ci ->content, ci ->sizecontent)){
+            if (!i_check(this->session, ci ->content, ci ->sizecontent)){
                 std::cout<<"Check failed!";
                 return -3;
             }
@@ -54,8 +54,8 @@ class Checker_Photo
 		Checker_Photo()
 		{
 			this -> session = (Session*)malloc(sizeof(Session));
-			std::cout<<"Loads "<<sizeof(Session)<<"  mamory\n";
-			this -> handle = dlopen("./libcv.so", RTLD_LAZY);
+			std::cout<<"Loads "<<sizeof(Session)<<"  memory\n";
+			this -> handle = dlopen("./libBKKAdaptor.so", RTLD_LAZY);
 			ResultCreating=0;
 			if (handle == NULL)
 			{
@@ -72,7 +72,7 @@ class Checker_Photo
         }
         void initSession(){
             Session * session = (Session*)malloc(sizeof(Session));
-            i_create_session load = (v_create_session)(dlsym(this->handle, "i_create_session"));
+            i_create_session load = (i_create_session)(dlsym(this->handle, "i_create_session"));
             if (!load){
                 std::cout<<"error loading i_create_session";
                 this->session=NULL;
@@ -102,11 +102,15 @@ class Checker_Photo
         }
 
 };
-
+void foreach(char * filename, Checker_Photo * cau){
+    std::ifstream ifs(filename);
+    std::string line;
+    while(std::getline(ifs, line))
+        cau ->checkFile(line.c_str());
+}
 int main(int argc, char *argv[])
 {
 	Checker_Photo * checker = new Checker_Photo();
-	std::cout<<checker->checkFile("./tested.wav");
 	for (int i=1; i<argc; i++)
-        std::cout<< checker->checkFile(argv[i]);
+        foreach(argv[1], checker);
 }
