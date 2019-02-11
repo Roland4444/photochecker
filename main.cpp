@@ -39,7 +39,7 @@ class Checker_Photo
 			if (loadContent(filename) == NULL)
                 return -1;
             ci = loadContent(filename);
-            BKKCheck i_check = (BKKCheck)(dlsym(handle,"i_check"));
+            BKKCheck i_check = (BKKCheck)(dlsym(handle,"i_check_format"));
             if (!i_check)
                 return -2;
 
@@ -47,7 +47,8 @@ class Checker_Photo
                 std::cout<<"Check failed!";
                 return -3;
             }
-            else return 0;
+            std::cout<<"\n\n\n>>>>>>>CHECK PSSSED!!!!!!!!!!!\n";
+            return 0;
 
 		}
 
