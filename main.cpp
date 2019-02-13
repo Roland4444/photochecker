@@ -66,12 +66,16 @@ class Checker_Photo
 			initSession();
 		};
     private:
-        ContentInfo * loadContent(char * filename){
+
+        ContentInfo * loadContent(char * filename)
+        {
             ContentInfo * ci=new ContentInfo;
             read_file_content(filename, &ci ->content, &ci->sizecontent);
             return ci;
         }
-        void initSession(){
+
+        void initSession()
+        {
             Session * session = (Session*)malloc(sizeof(Session));
             i_create_session load = (i_create_session)(dlsym(this->handle, "i_create_session"));
             if (!load){
@@ -87,7 +91,8 @@ class Checker_Photo
             std::cout<<"Session creates succesfully";
             this->session=session;
         }
-        bool read_file_content(const char *file_path, uint8_t **content, size_t *content_size) {
+        bool read_file_content(const char *file_path, uint8_t **content, size_t *content_size)
+        {
             FILE *fd = fopen(file_path, "rb");
             if (fd == NULL) {
                 fprintf(stderr, "file \"%s\" not found\n", file_path);
@@ -103,7 +108,8 @@ class Checker_Photo
         }
 
 };
-void foreach(char * filename, Checker_Photo * cau){
+void foreach(char * filename, Checker_Photo * cau)
+{
     std::ifstream ifs(filename);
     std::string line;
     while(std::getline(ifs, line))
